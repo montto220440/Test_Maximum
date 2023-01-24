@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<title>TO DO LIST</title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+    <div id="myDIV" class="header">
+        <h2 style="margin:5px">My To Do List</h2>
+        <button id="addBtn">Add</button>
+    </div>
+
+    <ul id="myList">
+        <li id="list_1">Hit the gym 
+            <button id="editBtn_list_1">Edit</button> 
+            <button id="delBtn_list_1">Delete</button></li>
+        <li class="checked">Pay bills <button id="editBtn">Edit</button>
+        </li>
+        <li>Meet George <button id="editBtn">Edit</button></li>
+        <li>Buy eggs <button id="editBtn">Edit</button></li>
+        <li>Read a book <button id="editBtn">Edit</button></li>
+        <li>Organize office <button id="editBtn">Edit</button></li>
+    </ul>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+        $(document).ready(function () {
+            console.log('test');
+        });
+
+        $('#addBtn').on('click', function(){
+            $('#myList').append('<li><input type="text" id="input_new"> <button onclick=SaveNewContent()>Save</button></li>')
+        });
+
+        $('button[id*=editBtn_list_]').on('click', function(){
+            var id = $(this).attr("id")
+            var my_split = id.split("_")
+            var real_id = my_split[1] + '_' + my_split[2]
+            console.log(real_id)
+            var content_val = $('li[id*='+ real_id + ']').html()
+            console.log(content_val)
+            $('#' + real_id).html("")
+            $('#' + real_id).html('<input type="text" id="input_' + real_id + ' value="'+ content_val +'" "> <button onclick=SaveContent("'+ real_id +'")>Save</button>')
+            // <input type="text" id="myInput" placeholder="Title...">
+        });
+
+        // $('input[id*=input_]').on('change', function(){
+        //     console.log('change');
+        //     var id = $(this).attr("id")
+        //     var my_split = id.split("_")
+        //     var real_id = my_split[1] + '_' + my_split[2] 
+        //     console.log(real_id)
+            
+        //     // <input type="text" id="myInput" placeholder="Title...">
+        // });
+
+        function SaveContent(id){
+            console.log('change');
+        }
+
+        function SaveNewContent(id){
+            console.log('new');
+        }
+
+</script>
+</html>

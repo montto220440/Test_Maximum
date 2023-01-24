@@ -12,55 +12,93 @@
     </div>
 
     <ul id="myList">
-        <li id="list_1">Hit the gym 
-            <button id="editBtn_list_1">Edit</button> 
-            <button id="delBtn_list_1">Delete</button></li>
-        <li class="checked">Pay bills <button id="editBtn">Edit</button>
-        </li>
-        <li>Meet George <button id="editBtn">Edit</button></li>
-        <li>Buy eggs <button id="editBtn">Edit</button></li>
-        <li>Read a book <button id="editBtn">Edit</button></li>
-        <li>Organize office <button id="editBtn">Edit</button></li>
+        
     </ul>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script>
         $(document).ready(function () {
-            console.log('test');
+            getAllList()
         });
 
         $('#addBtn').on('click', function(){
             $('#myList').append('<li><input type="text" id="input_new"> <button onclick=SaveNewContent()>Save</button></li>')
         });
 
-        $('button[id*=editBtn_list_]').on('click', function(){
-            var id = $(this).attr("id")
-            var my_split = id.split("_")
-            var real_id = my_split[1] + '_' + my_split[2]
-            console.log(real_id)
-            var content_val = $('li[id*='+ real_id + ']').html()
+        function editList(li_id){
+            var id = li_id
+            console.log(id)
+            var content_val = $('#list_' + id).attr("data-val")
             console.log(content_val)
-            $('#' + real_id).html("")
-            $('#' + real_id).html('<input type="text" id="input_' + real_id + ' value="'+ content_val +'" "> <button onclick=SaveContent("'+ real_id +'")>Save</button>')
-            // <input type="text" id="myInput" placeholder="Title...">
-        });
+            $('#list_' + id).html("")
+            $('#list_' + id).html('<input type="text" id="input_' + id + '" value="'+ content_val +'"> <button onclick=SaveContent("'+ id +'")>Save</button>')
+        };
 
-        // $('input[id*=input_]').on('change', function(){
-        //     console.log('change');
-        //     var id = $(this).attr("id")
-        //     var my_split = id.split("_")
-        //     var real_id = my_split[1] + '_' + my_split[2] 
-        //     console.log(real_id)
-            
-        //     // <input type="text" id="myInput" placeholder="Title...">
-        // });
+        function getAllList(){
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8080/list",
+                crossDomain: true,
+                withCredentials:false,
+                dataType: "JSON",
+                success: function (res) {
+                    // console.log('data: ', res);
+                    $.each(res, function (i, col) {
+                    $("#myList").append(`
+                        <li id="list_${col.id}" data-val="${col.content}">${col.content}
+                            <button id="editBtn_list_${col.id}" onclick="editList('${col.id}')">Edit</button> 
+                            <button id="delBtn_list_${col.id}" onclick="delList('${col.id}')">Delete</button>
+                        </li>
+                        `)
+                    });
+                }
+            });
+        }
 
         function SaveContent(id){
-            console.log('change');
+            var content_val = $('#input_'+ id).val();
+            $.ajax({
+                type: "PATCH",
+                url: "http://127.0.0.1:8080/list/" + id,
+                data: JSON.stringify({
+                        "Content":content_val,
+                    }),
+                dataType: "JSON",
+                success: function (res) {
+                    console.log('data: ', res);
+                    location.reload();
+                }
+            });
+        }
+
+        function delList(id){
+            console.log(id);
+            $.ajax({
+                type: "DELETE",
+                url: "http://127.0.0.1:8080/list/" + id,
+                dataType: "JSON",
+                success: function (res) {
+                    console.log('data: ', res);
+                    location.reload();
+                }
+            });
         }
 
         function SaveNewContent(id){
-            console.log('new');
+            var content_val = $('#input_new').val();
+            console.log('val: ', content_val);
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8080/list",
+                data: JSON.stringify({
+                        "Content":content_val,
+                    }),
+                dataType: "JSON",
+                success: function (res) {
+                    console.log('data: ', res);
+                    location.reload();
+                }
+            });
         }
 
 </script>
